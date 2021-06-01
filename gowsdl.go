@@ -460,9 +460,9 @@ var xsd2GoTypes = map[string]string{
 	"byte":          "int8",
 	"long":          "int64",
 	"boolean":       "bool",
-	"datetime":      "time.Time",
-	"date":          "time.Time",
-	"time":          "time.Time",
+	"datetime":      "soap.XSDDateTime",
+	"date":          "soap.XSDDate",
+	"time":          "soap.XSDTime",
 	"base64binary":  "[]byte",
 	"hexbinary":     "[]byte",
 	"unsignedint":   "uint32",
@@ -485,7 +485,7 @@ func removeNS(xsdType string) string {
 	return r[0]
 }
 
-func toGoType(xsdType string) string {
+func toGoType(xsdType string, nillable bool) string {
 	// Handles name space, ie. xsd:string, xs:string
 	r := strings.Split(xsdType, ":")
 
@@ -498,6 +498,9 @@ func toGoType(xsdType string) string {
 	value := xsd2GoTypes[strings.ToLower(t)]
 
 	if value != "" {
+		if nillable {
+			value = "*" + value
+		}
 		return value
 	}
 
